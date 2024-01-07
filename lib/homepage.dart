@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'screens/current_location_screen.dart';
-import 'screens/nearby_places_screen.dart';
-import 'screens/polyline_screen.dart';
-import 'screens/search_places_screen.dart';
-import 'screens/simple_map_screen.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,55 +9,46 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Flutter Google Maps"),
-        centerTitle: true,
-      ),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-                    return const SimpleMapScreen();
-                  }));
-                },
-                child: const Text("Simple Map")),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-                    return const CurrentLocationScreen();
-                  }));
-                },
-                child: const Text("User current location")),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-                    return const SearchPlacesScreen();
-                  }));
-                },
-                child: const Text("Search Places")),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-                    return const NearByPlacesScreen();
-                  }));
-                },
-                child: const Text("Near by Places")),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-                    return const PolylineScreen();
-                  }));
-                },
-                child: const Text("Polyline between 2 points"))
-          ],
-        ),
-      ),
-    );
+  String locationText = "Current Location";
+
+  Future<void> _getLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error("Location services are disabled.");
+    }
+    /* setState(() {
+      locationText = "Location Updated";
+    }); */
   }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text("Location Plus"),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                locationText,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  _getLocation();
+                },
+                child: const Text("Update Location"),
+              ),
+            ],
+          ),
+        ),
+      );
 }
