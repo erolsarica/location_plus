@@ -10,15 +10,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String locationText = "Current Location";
+  late String lat;
+  late String long;
 
-  Future<void> _getLocation() async {
+  Future<Position> _getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error("Location services are disabled.");
     }
-    /* setState(() {
-      locationText = "Location Updated";
-    }); */
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error(
+          "Location permissions are denied",
+        );
+      }
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error("Location permissions are permanently denied, we cannot request permissions.");
+      }      
+    }
+    return await Geolocator.getCurrentPosition();
   }
 
   @override
@@ -30,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Text(
                 locationText,
                 textAlign: TextAlign.center,
@@ -43,7 +55,13 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  _getLocation();
+                  _getCurrentLocation().then((value) {
+                    lat = '${value.latitude}';
+                    long = '${value.longitude}';
+                    setState(() {
+                      locationText = "Latitude: $lat\nLongitude: $long";
+                    });
+                  });
                 },
                 child: const Text("Update Location"),
               ),
