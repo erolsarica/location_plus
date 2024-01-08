@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> {
                     setState(() {
                       locationText = "Latitude: $lat\nLongitude: $long";
                     });
+                    _liveLoaction();
                   });
                 },
                 child: const Text("Update Location"),
