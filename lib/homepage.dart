@@ -33,6 +33,20 @@ class _HomePageState extends State<HomePage> {
     return await Geolocator.getCurrentPosition();
   }
 
+  void _liveLoaction() {
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+    Geolocator.getPositionStream(locationSettings: locationSettings).listen((Position position) {
+      setState(() {
+        lat = '${position.latitude}';
+        long = '${position.longitude}';
+        locationText = "Latitude: $lat\nLongitude: $long";
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
