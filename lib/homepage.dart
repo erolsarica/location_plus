@@ -47,6 +47,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+   Future<void> _openMap(String lat, String long) async {
+    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$lat,$long';
+    await canLaunchUrlString(googleUrl)
+        ? await launchUrlString(googleUrl)
+        : throw 'Could not open $googleUrl';
+  }
+  
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
